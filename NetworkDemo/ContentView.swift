@@ -5,21 +5,26 @@
 //  Created by Jiaming Guo on 2023-01-18.
 //
 
-import Alamofire
 import SwiftUI
 
 struct ContentView: View {
     @State private var text = ""
     
     func load() {
-        let url = URL(string: "https://raw.githubusercontent.com/j233guo/PostWeibo/main/PostWeibo/Resources/PostListData_recommend_1.json")!
-        AF.request(url).responseData { response in
-            
+        NetworkAPI.hotPostList { result in
+            switch result {
+            case let .success(list):
+                updateText("Post count \(list.list.count)")
+            case let .failure(error):
+                updateText(error.localizedDescription)
+            }
         }
     }
     
     func updateText(_ text: String) {
-        self.text = text
+        DispatchQueue.main.async {
+            self.text = text
+        }
     }
     
     var body: some View {
